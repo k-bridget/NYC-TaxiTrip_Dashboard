@@ -1,0 +1,9 @@
+# Ignore raw data
+data/
+database/cleaned_trips.csv
+
+# Ignore system files
+__pycache__/
+*.pyc
+.DS_Store
+.env
