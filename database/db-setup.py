@@ -2,7 +2,6 @@ import sqlite3
 import pandas as pd
 
 
-# Connecting to the database - this will create it if it doesn't exist
 database_connection = sqlite3.connect('nyc_taxi.db')
 db_cursor = database_connection.cursor()
 
@@ -14,11 +13,10 @@ CREATE TABLE IF NOT EXISTS vendors (
 )
 ''')
 
-
+# Just hardcoding these for now - we know there are only 2 main vendors
 db_cursor.execute("INSERT OR IGNORE INTO vendors (vendor_id, vendor_name) VALUES (1, 'Vendor A')")
 db_cursor.execute("INSERT OR IGNORE INTO vendors (vendor_id, vendor_name) VALUES (2, 'Vendor B')")
-
-
+# Note: Should probably make this more flexible in the future
 
 db_cursor.execute('''
 CREATE TABLE IF NOT EXISTS trips (
@@ -49,12 +47,14 @@ db_cursor.execute('CREATE INDEX IF NOT EXISTS idx_estimated_fare ON trips (estim
 # Might want to add more indexes later if we start querying on other columns frequently
 
 # Loading the cleaned data
-trips_data = pd.read_csv('database/cleaned_trips.csv')
+trips_data = pd.read_csv('cleaned_trips.csv')
 
 
 trips_data.to_sql('trips', database_connection, if_exists='replace', index=False)
 
+# Clean up our connections
 database_connection.commit()
 database_connection.close()
 
 print("Database setup complete!")
+# print(f"Loaded {len(trips_data)} records")  # Might be useful for debugging
