@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYC Taxi Trip Dashboard</title>
+    
+    <!-- Styles and Fonts -->
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-taxi"></i>
+            <h2>NYC Taxi</h2>
+            <button class="sidebar-toggle" id="sidebar-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#dashboard" class="nav-link active" data-section="dashboard">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="#filters" class="nav-link" data-section="filters">
+                <i class="fas fa-filter"></i>
+                <span>Filters</span>
+            </a>
+            <a href="#stats" class="nav-link" data-section="stats">
+                <i class="fas fa-chart-bar"></i>
+                <span>Statistics</span>
+            </a>
+            <a href="#charts" class="nav-link" data-section="charts">
+                <i class="fas fa-chart-pie"></i>
+                <span>Visualizations</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="theme-toggle" id="theme-toggle" title="Toggle Dark Mode">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="main-content">
+        <header class="main-header">
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1>NYC Taxi Trip Dashboard</h1>
+            <p class="subtitle">Analysis of Urban Mobility datasets</p>
+        </header>
+
+        <!-- Filters Section -->
+        <section class="section filters-section" id="filters-section">
+            <div class="section-header">
+                <h2><i class="fas fa-filter"></i> Filter Data</h2>
+                <div class="section-actions">
+                    <button class="btn-secondary" id="clear-filters" title="Clear all filters">
+                        <i class="fas fa-times"></i> Clear
+                    </button>
+                    <button class="btn-primary" id="apply-filters">
+                        <i class="fas fa-search"></i> Apply Filters
+                    </button>
+                </div>
+            </div>
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label for="start-date">
+                        <i class="fas fa-calendar-alt"></i> Start Date
+                    </label>
+                    <input type="date" id="start-date" title="Select start date">
+                </div>
+                <div class="filter-group">
+                    <label for="end-date">
+                        <i class="fas fa-calendar-alt"></i> End Date
+                    </label>
+                    <input type="date" id="end-date" title="Select end date">
+                </div>
+                <div class="filter-group">
+                    <label for="vendor-id">
+                        <i class="fas fa-building"></i> Vendor ID
+                    </label>
+                    <select id="vendor-id" title="Select vendor">
+                        <option value="">All Vendors</option>
+                        <option value="1">Vendor 1</option>
+                        <option value="2">Vendor 2</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="passenger-count">
+                        <i class="fas fa-users"></i> Passenger Count
+                    </label>
+                    <input type="number" id="passenger-count" min="1" max="6" placeholder="Any" title="Enter passenger count (1-6)">
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="section stats-section" id="stats-section">
+            <div class="section-header">
+                <h2><i class="fas fa-chart-bar"></i>Statistics</h2>
+                <button class="refresh-btn" id="refresh-stats" title="Refresh statistics">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+            <div class="stats-grid" id="stats-content">
+                <!-- Loading placeholder for statistics -->
+                <div class="stat-card loading">
+                    <div class="stat-icon">
+                        <i class="fas fa-route"></i>
+                    </div>
+                    <div class="stat-value">Loading...</div>
+                    <div class="stat-label">Total Trips</div>
+                </div>
+                <div class="stat-card loading">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-value">Loading...</div>
+                    <div class="stat-label">Avg Duration</div>
+                </div>
+                <div class="stat-card loading">
+                    <div class="stat-icon">
+                        <i class="fas fa-road"></i>
+                    </div>
+                    <div class="stat-value">Loading...</div>
+                    <div class="stat-label">Avg Distance</div>
+                </div>
+                <div class="stat-card loading">
+                    <div class="stat-icon">
+                        <i class="fas fa-tachometer-alt"></i>
+                    </div>
+                    <div class="stat-value">Loading...</div>
+                    <div class="stat-label">Avg Speed</div>
+                </div>
+                <div class="stat-card loading">
+                    <div class="stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-value">Loading...</div>
+                    <div class="stat-label">Avg Fare</div>
+                </div>
+                <div class="stat-card loading">
+                    <div class="stat-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="stat-value">Loading...</div>
+                    <div class="stat-label">Total Fare</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Charts Section -->
+        <section class="section charts-section" id="charts-section">
+            <div class="section-header">
+                <h2><i class="fas fa-chart-pie"></i> Data Visualizations</h2>
+                <div class="chart-controls">
+                    <button class="btn-secondary" id="reset-charts" title="Reset to full dataset">
+                        <i class="fas fa-undo"></i> Reset
+                    </button>
+                </div>
+            </div>
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-clock"></i> Trip Duration</h3>
+                        <span class="chart-info" title="Distribution of trip durations in 5-minute bins">ℹ️</span>
+                    </div>
+                    <canvas id="duration-histogram"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-users"></i> Passenger Count Distribution</h3>
+                        <span class="chart-info" title="Number of trips by passenger count">ℹ️</span>
+                    </div>
+                    <canvas id="passenger-distribution"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-calendar-alt"></i> Trip Volume Over Time</h3>
+                        <span class="chart-info" title="Daily trip volume trends">ℹ️</span>
+                    </div>
+                    <canvas id="time-series"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-route"></i> Distance vs Estimated Fare</h3>
+                        <span class="chart-info" title="Relationship between trip distance and fare">ℹ️</span>
+                    </div>
+                    <canvas id="distance-fare-scatter"></canvas>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading data...</p>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Main JavaScript File -->
+    <script src="main.js"></script>
+</body>
+</html>
