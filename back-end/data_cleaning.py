@@ -15,6 +15,9 @@ def main():
     # Load raw data
     df = pd.read_csv('../train/train.csv')
 
+    # Limit to 100 trips for testing/demo
+    df = df.head(100)
+
     original_count = len(df)
     print(f"Original records: {original_count}")
 
