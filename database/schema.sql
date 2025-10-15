@@ -1,7 +1,7 @@
 -- NYC Taxi Trip Database Schema
 -- SQLite database for storing cleaned taxi trip data
 
--- Create trips table
+-- Creating trips table
 CREATE TABLE IF NOT EXISTS trips (
     id TEXT PRIMARY KEY,
     vendor_id INTEGER NOT NULL,
