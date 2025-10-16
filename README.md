@@ -13,7 +13,7 @@
 
 **Data Visualizations**: Multiple chart types including histograms, bar charts, anomaly detection.
 
-**Responsive Design**: Modern UI with clean styling
+**Responsive Design**: Modern, clean layout with responsive cards
 
 # Backend
 
@@ -54,12 +54,9 @@ NYC-TaxiTrip_Dashboard/
 ├── requirements.txt
 └── README.md
 
+# Video walkthrough
 
-# UI/UX Design
-
-Modern, clean layout with responsive cards
-
-# Troubleshooting
+https://youtu.be/IIVHOGzHnlw?si=CSGwF6dHwMk0BVTx
 
 Common Issues
 
