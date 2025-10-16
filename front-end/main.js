@@ -1,5 +1,5 @@
 // --- CONFIGURATION ---
-const API_BASE = "http://127.0.0.1:5000/api"; // Base URL for API calls
+const API_BASE = "/api"; // Base URL for API calls
 let currentTheme = localStorage.getItem("theme") || "light";
 
 // --- INITIAL SETUP ---
@@ -74,7 +74,13 @@ async function loadAllData() {
 async function loadStats() {
   // Show statistics from the API
   try {
-    const res = await fetch(`${API_BASE}/stats`);
+    const params = new URLSearchParams({
+      start_date: val("start-date"),
+      end_date: val("end-date"),
+      vendor_id: val("vendor-id"),
+      passenger_count: val("passenger-count")
+    });
+    const res = await fetch(`${API_BASE}/stats?${params}`);
     const s = await res.json();
     document.getElementById("stats-content").innerHTML = `
       ${statCard("fa-route", s.total_trips, "Total Trips")}
@@ -122,15 +128,15 @@ function val(id) {
 
 // --- FILTERS ---
 function applyFilters() {
-  // Apply filters and reload trips
+  // Apply filters and reload trips and stats
   showLoading(true);
-  loadTrips().finally(() => showLoading(false));
+  Promise.all([loadStats(), loadTrips()]).finally(() => showLoading(false));
 }
 
 function clearFilters() {
   // Clear all filter inputs
   ["start-date", "end-date", "vendor-id", "passenger-count"].forEach(id => (document.getElementById(id).value = ""));
-  loadTrips(); // Reload trips with cleared filters
+  Promise.all([loadStats(), loadTrips()]); // Reload trips and stats with cleared filters
 }
 
 // --- CHARTS ---

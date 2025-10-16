@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import sqlite3
 import json
@@ -57,7 +57,7 @@ def get_stats():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("""
+    query = """
         SELECT
             COUNT(*) as total_trips,
             AVG(trip_duration) as avg_duration,
@@ -66,7 +66,30 @@ def get_stats():
             AVG(estimated_fare) as avg_fare,
             SUM(estimated_fare) as total_fare
         FROM trips
-    """)
+        WHERE 1=1
+    """
+    params = []
+
+    # Filters
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    vendor_id = request.args.get('vendor_id')
+    passenger_count = request.args.get('passenger_count')
+
+    if start_date:
+        query += " AND pickup_datetime >= ?"
+        params.append(start_date)
+    if end_date:
+        query += " AND pickup_datetime <= ?"
+        params.append(end_date)
+    if vendor_id:
+        query += " AND vendor_id = ?"
+        params.append(int(vendor_id))
+    if passenger_count:
+        query += " AND passenger_count = ?"
+        params.append(int(passenger_count))
+
+    cursor.execute(query, params)
     row = cursor.fetchone()
     conn.close()
 
@@ -85,5 +108,13 @@ def get_anomalies():
     anomalies = detect_anomalies(durations)
     return jsonify(anomalies)
 
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_frontend(path):
+    if path == '' or not path:
+        return send_from_directory('../front-end', 'index.html')
+    else:
+        return send_from_directory('../front-end', path)
+
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5000)
