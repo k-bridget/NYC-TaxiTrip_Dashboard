@@ -25,7 +25,7 @@
 
 **Pandas** - Data processing and analysis
 
-#Project Structure
+# Project Structure
 
 NYC-TaxiTrip_Dashboard/
 
@@ -33,6 +33,7 @@ NYC-TaxiTrip_Dashboard/
 │   ├── index.html            # Main HTML file
 │   ├── style.css             # CSS stylesheets
 │   └── main.js               # JavaScript functionality
+
 ├── back-end/                 # Backend application
 │   ├── app.py                # Flask application
 │   ├── requirements.txt      # Python dependencies
@@ -40,20 +41,23 @@ NYC-TaxiTrip_Dashboard/
 │   ├── database.py           # Database utilities
 │   └── algorithms/           # Custom algorithms
 │       └── anomaly_detection.py
+
 ├── database/                 # Database files and setup
 │   ├── schema.sql            # Database schema
 │   ├── db-setup.py           # Database setup script
 │   ├── nyc_taxi.db           # SQLite database file
 │   └── cleaned_trips.csv     # Processed data
+
 ├── docs/                     # Documentation
 │   ├── readme_images/        # Images for documentation
 │   └── report.pdf            # Technical report
-├── train/                    
+├── train/                   
+
 │   └── train.csv             # Original NYC taxi dataset
 ├── .gitignore               # Git ignore file
 └── README.md                # This file
 
-#Technologies Used
+# Technologies Used
 
   Flask (Python) — Backend API
   
@@ -63,11 +67,11 @@ NYC-TaxiTrip_Dashboard/
   
   Chart.js — Visualization
 
-#UI/UX Design
+# UI/UX Design
 
 Modern, clean layout with responsive cards
 
-#Troubleshooting
+# Troubleshooting
 
 Common Issues
 
