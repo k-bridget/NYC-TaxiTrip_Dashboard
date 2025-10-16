@@ -1,13 +1,17 @@
 // --- CONFIGURATION ---
 const API_BASE = "http://127.0.0.1:5000/api"; // Base URL for API calls
 let currentTheme = localStorage.getItem("theme") || "light";
+let allTrips = []; // Cache for all trips data
+let filteredTrips = []; // Cache for filtered trips
 
 // --- INITIAL SETUP ---
 document.addEventListener("DOMContentLoaded", () => {
   document.documentElement.setAttribute("data-theme", currentTheme);
   updateThemeIcon(); // Update the theme icon
   setupListeners(); // set up listeners
-  loadAllData(); // Load data
+  loadSavedFilters(); // Load saved filters from localStorage
+  loadAllTrips(); // Load all trips once
+  // loadStats() is called after data loads
 });
 
 // --- EVENT HANDLERS ---
@@ -28,7 +32,19 @@ function toggle(id, cls) {
 }
 
 function showLoading(on = true) {
-  document.getElementById("loading-overlay").classList.toggle("active", on);
+  const overlay = document.getElementById("loading-overlay");
+  if (on) {
+    overlay.innerHTML = `
+      <div class="loading-spinner">
+        <i class="fas fa-spinner"></i>
+        <p>Loading data...</p>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+    `;
+  }
+  overlay.classList.toggle("active", on);
 }
 
 function showToast(msg, type = "info") {
@@ -64,35 +80,78 @@ function updateThemeIcon() {
 }
 
 // --- DATA LOADING ---
-async function loadAllData() {
-  // Load all data (statistics and trips)
+async function loadAllTrips() {
+  // Load all trips from local CSV file
   showLoading(true);
-  await Promise.all([loadStats(), loadTrips()]);
-  showLoading(false);
+  try {
+    const res = await fetch('../database/cleaned_trips.csv');
+    const csvText = await res.text();
+    allTrips = parseCSV(csvText);
+    filteredTrips = [...allTrips]; // Initially, filtered trips are all trips
+    applySavedFilters(); // Apply saved filters if any
+    drawCharts(filteredTrips); // Draw charts with all trips
+    loadStats(); // Load initial stats after data is loaded
+    showToast("Data loaded successfully!", "success");
+  } catch (err) {
+    showToast("Failed to load data", "error");
+    // Add retry option
+    const retryBtn = document.createElement("button");
+    retryBtn.textContent = "Retry";
+    retryBtn.onclick = loadAllTrips;
+    document.getElementById("toast-container").appendChild(retryBtn);
+  } finally {
+    showLoading(false);
+  }
+}
+
+function parseCSV(csvText) {
+  // Parse CSV text into array of trip objects
+  const lines = csvText.split('\n');
+  const headers = lines[0].split(',');
+  const trips = [];
+  for (let i = 1; i < lines.length; i++) {
+    const values = lines[i].split(',');
+    if (values.length === headers.length) {
+      const trip = {};
+      headers.forEach((header, index) => {
+        const value = values[index];
+        trip[header] = isNaN(value) ? value : parseFloat(value);
+      });
+      trips.push(trip);
+    }
+  }
+  return trips;
 }
 
 async function loadStats() {
-  // Show statistics from the API
-  try {
-    const params = new URLSearchParams({
-      start_date: val("start-date"),
-      end_date: val("end-date"),
-      vendor_id: val("vendor-id"),
-      passenger_count: val("passenger-count")
-    });
-    const res = await fetch(`${API_BASE}/stats?${params}`);
-    const s = await res.json();
+  // Calculate stats client-side from filtered trips
+  if (filteredTrips.length === 0) {
     document.getElementById("stats-content").innerHTML = `
-      ${statCard("fa-route", s.total_trips, "Total Trips")}
-      ${statCard("fa-clock", s.avg_duration.toFixed(1) + "s", "Avg Duration")}
-      ${statCard("fa-road", s.avg_distance.toFixed(1) + " km", "Avg Distance")}
-      ${statCard("fa-tachometer-alt", s.avg_speed.toFixed(1) + " km/h", "Avg Speed")}
-      ${statCard("fa-dollar-sign", "$" + s.avg_fare.toFixed(2), "Avg Fare")}
-      ${statCard("fa-money-bill-wave", "$" + s.total_fare.toLocaleString(), "Total Fare")}
+      ${statCard("fa-route", 0, "Total Trips")}
+      ${statCard("fa-clock", "0s", "Avg Duration")}
+      ${statCard("fa-road", "0 km", "Avg Distance")}
+      ${statCard("fa-tachometer-alt", "0 km/h", "Avg Speed")}
+      ${statCard("fa-dollar-sign", "$0.00", "Avg Fare")}
+      ${statCard("fa-money-bill-wave", "$0", "Total Fare")}
     `;
-  } catch (err) {
-    showToast("Failed to load stats", "error"); // Show error if fetching fails
+    return;
   }
+
+  const totalTrips = filteredTrips.length;
+  const avgDuration = filteredTrips.reduce((sum, t) => sum + t.trip_duration, 0) / totalTrips;
+  const avgDistance = filteredTrips.reduce((sum, t) => sum + t.distance_km, 0) / totalTrips;
+  const avgSpeed = filteredTrips.reduce((sum, t) => sum + t.speed_kmh, 0) / totalTrips;
+  const avgFare = filteredTrips.reduce((sum, t) => sum + t.estimated_fare, 0) / totalTrips;
+  const totalFare = filteredTrips.reduce((sum, t) => sum + t.estimated_fare, 0);
+
+  document.getElementById("stats-content").innerHTML = `
+    ${statCard("fa-route", totalTrips, "Total Trips")}
+    ${statCard("fa-clock", avgDuration.toFixed(1) + "s", "Avg Duration")}
+    ${statCard("fa-road", avgDistance.toFixed(1) + " km", "Avg Distance")}
+    ${statCard("fa-tachometer-alt", avgSpeed.toFixed(1) + " km/h", "Avg Speed")}
+    ${statCard("fa-dollar-sign", "$" + avgFare.toFixed(2), "Avg Fare")}
+    ${statCard("fa-money-bill-wave", "$" + totalFare.toLocaleString(), "Total Fare")}
+  `;
 }
 
 function statCard(icon, value, label) {
@@ -104,44 +163,90 @@ function statCard(icon, value, label) {
   </div>`;
 }
 
-async function loadTrips() {
-  // Fetch and display trips from the API based on filters
-  try {
-    const params = new URLSearchParams({
-      start_date: val("start-date"),
-      end_date: val("end-date"),
-      vendor_id: val("vendor-id"),
-      passenger_count: val("passenger-count")
-    });
-    const res = await fetch(`${API_BASE}/trips?${params}`);
-    const trips = await res.json();
-    if (!trips.length) return showToast("No trips found", "warning"); // Notify if no trips are found
-    drawCharts(trips); // Draw charts with the trip data
-  } catch (err) {
-    showToast("Error loading trips", "error"); // Show error if fetching fails
-  }
+function loadTrips() {
+  // Use cached data for charts
+  drawCharts(filteredTrips);
 }
 
 function val(id) {
   return document.getElementById(id).value;
 }
 
+// --- FILTER PERSISTENCE ---
+function loadSavedFilters() {
+  // Load saved filter values from localStorage
+  const savedFilters = JSON.parse(localStorage.getItem("filters") || "{}");
+  Object.keys(savedFilters).forEach(id => {
+    const element = document.getElementById(id);
+    if (element) element.value = savedFilters[id];
+  });
+}
+
+function saveFilters() {
+  // Save current filter values to localStorage
+  const filters = {};
+  ["start-date", "end-date", "vendor-id", "passenger-count"].forEach(id => {
+    filters[id] = val(id);
+  });
+  localStorage.setItem("filters", JSON.stringify(filters));
+}
+
+function applySavedFilters() {
+  // Apply saved filters to the data
+  const savedFilters = JSON.parse(localStorage.getItem("filters") || "{}");
+  if (Object.keys(savedFilters).length > 0) {
+    const startDate = savedFilters["start-date"];
+    const endDate = savedFilters["end-date"];
+    const vendorId = savedFilters["vendor-id"];
+    const passengerCount = savedFilters["passenger-count"];
+
+    filteredTrips = allTrips.filter(trip => {
+      const tripDate = trip.pickup_datetime.split(" ")[0];
+      if (startDate && tripDate < startDate) return false;
+      if (endDate && tripDate > endDate) return false;
+      if (vendorId && trip.vendor_id != vendorId) return false;
+      if (passengerCount && trip.passenger_count != passengerCount) return false;
+      return true;
+    });
+  }
+}
+
 // --- FILTERS ---
 function applyFilters() {
-  // Apply filters and reload trips and stats
-  showLoading(true);
-  Promise.all([loadStats(), loadTrips()]).finally(() => showLoading(false));
+  // Apply client-side filters to cached data
+  const startDate = val("start-date");
+  const endDate = val("end-date");
+  const vendorId = val("vendor-id");
+  const passengerCount = val("passenger-count");
+
+  filteredTrips = allTrips.filter(trip => {
+    const tripDate = trip.pickup_datetime.split(" ")[0];
+    if (startDate && tripDate < startDate) return false;
+    if (endDate && tripDate > endDate) return false;
+    if (vendorId && trip.vendor_id != vendorId) return false;
+    if (passengerCount && trip.passenger_count != passengerCount) return false;
+    return true;
+  });
+
+  saveFilters(); // Save filters to localStorage
+  loadStats(); // Update stats with filtered data
+  loadTrips(); // Update charts with filtered data
+  showToast("Filters applied!", "success");
 }
 
 function clearFilters() {
-  // Clear all filter inputs
+  // Clear all filter inputs and reset to all data
   ["start-date", "end-date", "vendor-id", "passenger-count"].forEach(id => (document.getElementById(id).value = ""));
-  Promise.all([loadStats(), loadTrips()]); // Reload trips and stats with cleared filters
+  localStorage.removeItem("filters"); // Clear saved filters
+  filteredTrips = [...allTrips];
+  loadStats();
+  loadTrips();
+  showToast("Filters cleared!", "info");
 }
 
 // --- CHARTS ---
 function drawCharts(trips) {
-  // Draw charts
+  // Draw charts with fade-in animation
   const ctx = id => document.getElementById(id);
   Chart.helpers.each(Chart.instances, c => c.destroy());
 
@@ -161,6 +266,11 @@ function drawCharts(trips) {
   // Distance vs. Estimated Fare scatter plot
   const scatter = trips.map(t => ({ x: t.distance_km, y: t.estimated_fare }));
   new Chart(ctx("distance-fare-scatter"), scatterConfig(scatter));
+
+  // Add fade-in class to chart containers
+  document.querySelectorAll('.chart-container').forEach(container => {
+    container.classList.add('fade-in');
+  });
 }
 
 // --- CHART HELPERS ---

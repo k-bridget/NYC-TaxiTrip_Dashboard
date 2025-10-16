@@ -27,7 +27,7 @@ def get_trips():
     end_date = request.args.get('end_date')
     vendor_id = request.args.get('vendor_id')
     passenger_count = request.args.get('passenger_count')
-    limit = request.args.get('limit', 100, type=int)
+    limit = request.args.get('limit', 10000, type=int)
 
     if start_date:
         query += " AND pickup_datetime >= ?"
