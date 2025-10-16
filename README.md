@@ -28,21 +28,19 @@
 # Project Structure
 
 NYC-TaxiTrip_Dashboard/
-│
 ├── back-end/
 │   ├── app.py
 │   ├── data_cleaning.py
+│   ├── anomaly_detection.py
 │   ├── database.py
-│   ├── requirements.txt
-│   └── algorithms/
-│       ├── __init__.py
-│       └── anomaly_detection.py
+│   ├── algorithms/
+│   └── __init__.py
 │
 ├── database/
-│   ├── cleaned_trips.csv
 │   ├── nyc_taxi.db
 │   ├── db-setup.py
-│   └── schema.sql
+│   ├── schema.sql
+│   └── cleaned_trips.csv
 │
 ├── front-end/
 │   ├── index.html
@@ -53,7 +51,9 @@ NYC-TaxiTrip_Dashboard/
 │   ├── readme_images/
 │   └── report.pdf
 │
+├── requirements.txt
 └── README.md
+
 
 # UI/UX Design
 
