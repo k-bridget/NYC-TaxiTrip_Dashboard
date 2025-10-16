@@ -58,6 +58,10 @@ NYC-TaxiTrip_Dashboard/
 
 https://youtu.be/IIVHOGzHnlw?si=CSGwF6dHwMk0BVTx
 
+# PDF DOCUMENTATION
+
+[PDF documentation.pdf](https://github.com/user-attachments/files/22959284/PDF.documentation.pdf)
+
 Common Issues
 
 **Backend server won't start:**
