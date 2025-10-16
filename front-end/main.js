@@ -1,14 +1,13 @@
 // --- CONFIGURATION ---
 const API_BASE = "http://127.0.0.1:5000/api"; // Base URL for API calls
-let currentTheme = localStorage.getItem("theme") || "light"; // Get saved theme or default to light
+let currentTheme = localStorage.getItem("theme") || "light";
 
 // --- INITIAL SETUP ---
 document.addEventListener("DOMContentLoaded", () => {
-  // Set the theme based on the saved preference
   document.documentElement.setAttribute("data-theme", currentTheme);
-  updateThemeIcon(); // Update the theme toggle icon
-  setupListeners(); // Initialize event listeners
-  loadAllData(); // Load initial data
+  updateThemeIcon(); // Update the theme icon
+  setupListeners(); // set up listeners
+  loadAllData(); // Load data
 });
 
 // --- EVENT HANDLERS ---
@@ -25,17 +24,15 @@ function setupListeners() {
 
 // --- GENERAL UTILITIES ---
 function toggle(id, cls) {
-  // Toggle a CSS class on an element by ID
   document.getElementById(id).classList.toggle(cls);
 }
 
 function showLoading(on = true) {
-  // Show or hide the loading overlay
   document.getElementById("loading-overlay").classList.toggle("active", on);
 }
 
 function showToast(msg, type = "info") {
-  // Create and display a toast notification
+  // Display toast notification
   const icons = {
     success: "fa-check-circle",
     error: "fa-exclamation-circle",
@@ -51,16 +48,15 @@ function showToast(msg, type = "info") {
 
 // --- THEME ---
 function toggleTheme() {
-  // Switch between light and dark themes
   currentTheme = currentTheme === "light" ? "dark" : "light";
   document.documentElement.setAttribute("data-theme", currentTheme);
-  localStorage.setItem("theme", currentTheme); // Save the theme preference
+  localStorage.setItem("theme", currentTheme); // Save the theme
   updateThemeIcon(); // Update the icon
   showToast("Theme switched!", "success"); // Show feedback
 }
 
 function updateThemeIcon() {
-  // Update the theme toggle button icon based on the current theme
+  // Update the theme toggle button icon
   document.getElementById("theme-toggle").innerHTML =
     currentTheme === "light"
       ? '<i class="fas fa-moon"></i> Dark Mode'
@@ -69,14 +65,14 @@ function updateThemeIcon() {
 
 // --- DATA LOADING ---
 async function loadAllData() {
-  // Load all initial data (statistics and trips)
+  // Load all data (statistics and trips)
   showLoading(true);
   await Promise.all([loadStats(), loadTrips()]);
   showLoading(false);
 }
 
 async function loadStats() {
-  // Fetch and display statistics from the API
+  // Show statistics from the API
   try {
     const res = await fetch(`${API_BASE}/stats`);
     const s = await res.json();
@@ -121,7 +117,6 @@ async function loadTrips() {
 }
 
 function val(id) {
-  // Get the value of an input element by ID
   return document.getElementById(id).value;
 }
 
@@ -140,9 +135,9 @@ function clearFilters() {
 
 // --- CHARTS ---
 function drawCharts(trips) {
-  // Draw various charts based on the trips data
+  // Draw charts
   const ctx = id => document.getElementById(id);
-  Chart.helpers.each(Chart.instances, c => c.destroy()); // Reset old charts
+  Chart.helpers.each(Chart.instances, c => c.destroy());
 
   // Duration histogram
   const durations = trips.map(t => t.trip_duration);
