@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 NYC Taxi Trip Dashboard Launcher
-Automatically starts the Flask backend and opens the frontend in the browser.
+Automatically starts the Flask backend and a separate HTTP server for the frontend.
 """
 
 import subprocess
@@ -13,55 +13,71 @@ import sys
 def main():
     print("Starting NYC Taxi Trip Dashboard...")
 
-    # Get the current directory
+    # Get the current directory (which is back-end)
     current_dir = os.path.dirname(os.path.abspath(__file__))
 
-    # Path to backend directory
-    backend_dir = os.path.join(current_dir, 'back-end')
+    # Backend directory is current directory
+    backend_dir = current_dir
 
-    # Path to frontend HTML file
-    frontend_path = os.path.join(current_dir, 'front-end', 'index.html')
+    # Frontend directory
+    frontend_dir = os.path.join(current_dir, '..', 'front-end')
 
     try:
-        # Start the Flask server
+        # Start the Flask backend server
         print("Starting Flask backend server...")
-        server_process = subprocess.Popen(
+        backend_process = subprocess.Popen(
             [sys.executable, 'app.py'],
             cwd=backend_dir,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
         )
 
-        # Wait for server to start
-        print("Waiting for server to start...")
+        # Start the frontend HTTP server
+        print("Starting frontend HTTP server...")
+        frontend_process = subprocess.Popen(
+            [sys.executable, '-m', 'http.server', '8000'],
+            cwd=frontend_dir,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+
+        # Wait for servers to start
+        print("Waiting for servers to start...")
         time.sleep(3)
 
-        # Check if server is running
-        if server_process.poll() is None:
-            print("Backend server started successfully!")
+        # Check if both servers are running
+        if backend_process.poll() is None and frontend_process.poll() is None:
+            print("Backend and frontend servers started successfully!")
 
             # Open frontend in browser
             print("Opening frontend in browser...")
-            webbrowser.open(f'file://{frontend_path}')
+            webbrowser.open('http://127.0.0.1:8000')
 
             print("\nDashboard is now running!")
-            print("Backend server: http://127.0.0.1:5000")
-            print("Frontend: Opened in default browser")
-            print("\nPress Ctrl+C to stop the server")
+            print("Backend API: http://127.0.0.1:5000")
+            print("Frontend: http://127.0.0.1:8000")
+            print("\nPress Ctrl+C to stop the servers")
 
-            # Keep the script running to keep server alive
+            # Keep the script running to keep servers alive
             try:
-                server_process.wait()
+                backend_process.wait()
             except KeyboardInterrupt:
-                print("\nStopping server...")
-                server_process.terminate()
-                server_process.wait()
-                print("Server stopped.")
+                print("\nStopping servers...")
+                backend_process.terminate()
+                frontend_process.terminate()
+                backend_process.wait()
+                frontend_process.wait()
+                print("Servers stopped.")
         else:
-            print("Failed to start backend server.")
-            stdout, stderr = server_process.communicate()
-            print("STDOUT:", stdout.decode())
-            print("STDERR:", stderr.decode())
+            print("Failed to start servers.")
+            if backend_process.poll() is not None:
+                stdout, stderr = backend_process.communicate()
+                print("Backend STDOUT:", stdout.decode())
+                print("Backend STDERR:", stderr.decode())
+            if frontend_process.poll() is not None:
+                stdout, stderr = frontend_process.communicate()
+                print("Frontend STDOUT:", stdout.decode())
+                print("Frontend STDERR:", stderr.decode())
 
     except Exception as e:
         print(f"Error starting application: {e}")

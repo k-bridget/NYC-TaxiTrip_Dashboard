@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import sqlite3
 import json
@@ -107,14 +107,6 @@ def get_anomalies():
 
     anomalies = detect_anomalies(durations)
     return jsonify(anomalies)
-
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
-def serve_frontend(path):
-    if path == '' or not path:
-        return send_from_directory('../front-end', 'index.html')
-    else:
-        return send_from_directory('../front-end', path)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

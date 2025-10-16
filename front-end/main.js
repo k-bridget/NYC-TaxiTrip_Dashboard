@@ -1,5 +1,5 @@
 // --- CONFIGURATION ---
-const API_BASE = "/api"; // Base URL for API calls
+const API_BASE = "http://127.0.0.1:5000/api"; // Base URL for API calls
 let currentTheme = localStorage.getItem("theme") || "light";
 
 // --- INITIAL SETUP ---
