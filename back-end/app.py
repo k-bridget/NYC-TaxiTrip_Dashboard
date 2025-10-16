@@ -7,7 +7,7 @@ from algorithms.anomaly_detection import detect_anomalies
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend
 
-DB_PATH = 'nyc_taxi.db'
+DB_PATH = '../database/nyc_taxi.db'
 
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH)
