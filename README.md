@@ -4,21 +4,31 @@
  # Features
 
 **Frontend**(HTML,CSS. Chart.js)
+
 **Interactive Dashboard**:responsive web interface with dark/light theme toggle
+
 **DataFiltering**: Date range, fare range, hour selection
+
 **Real-time Statistics**: Live calculation of trip metrics (total trips, average duration, distance, speed, and fare)
+
 **Data Visualizations**: Multiple chart types including histograms, bar charts, anomaly detection.
+
 **Responsive Design**: Modern UI with clean styling
 
 # Backend
+
 **Python** - Core programming language
+
 **Flask** - Lightweight web framework
+
 **SQLite** -  database
+
 **Pandas** - Data processing and analysis
 
 #Project Structure
 
 NYC-TaxiTrip_Dashboard/
+
 ├── front-end/                 # Frontend application
 │   ├── index.html            # Main HTML file
 │   ├── style.css             # CSS stylesheets
@@ -44,9 +54,13 @@ NYC-TaxiTrip_Dashboard/
 └── README.md                # This file
 
 #Technologies Used
+
   Flask (Python) — Backend API
+  
   SQLite3 — Database
+  
   HTML, CSS, JavaScript — Frontend UI
+  
   Chart.js — Visualization
 
 #UI/UX Design
@@ -58,17 +72,25 @@ Modern, clean layout with responsive cards
 Common Issues
 
 **Backend server won't start:**
+
   Ensure all dependencies are installed: `pip install -r requirements.txt`
+  
   Check Python version: `python --version` (should be 3.8+)
+  
   Verify database file exists
 
 **Frontend not loading data:**
+
   Ensure backend server is running on port 5000
+  
   Check browser console
+  
   Verify API_BASE URL
 
 **Database errors:**
+
  Run `python database/db-setup.py` to recreate database
+ 
  Ensure `cleaned_trips.csv` exists in `database/` directory
 
 
