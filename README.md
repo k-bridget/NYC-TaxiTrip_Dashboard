@@ -28,61 +28,32 @@
 # Project Structure
 
 NYC-TaxiTrip_Dashboard/
-
-├── front-end/                 # Frontend application
-
-│   ├── index.html            # Main HTML file
-
-│   ├── style.css             # CSS stylesheets
-
-│   └── main.js               # JavaScript functionality
-
-├── back-end/                 # Backend application
-
-│   ├── app.py                # Flask application
-
-│   ├── requirements.txt      # Python dependencies
-
-│   ├── data_cleaning.py      # Data preprocessing script
-
-│   ├── database.py           # Database utilities
-
-│   └── algorithms/           # Custom algorithms
-
+│
+├── back-end/
+│   ├── app.py
+│   ├── data_cleaning.py
+│   ├── database.py
+│   ├── requirements.txt
+│   └── algorithms/
+│       ├── __init__.py
 │       └── anomaly_detection.py
-
-├── database/                 # Database files and setup
-
-│   ├── schema.sql            # Database schema
-
-│   ├── db-setup.py           # Database setup script
-
-│   ├── nyc_taxi.db           # SQLite database file
-
-│   └── cleaned_trips.csv     # Processed data
-
-├── docs/                     # Documentation
-
-│   ├── readme_images/        # Images for documentation
-
-│   └── report.pdf            # Technical report
-├── train/                   
-
-│   └── train.csv             # Original NYC taxi dataset
-
-├── .gitignore               # Git ignore file
-
-└── README.md                # This file
-
-# Technologies Used
-
-  Flask (Python) — Backend API
-  
-  SQLite3 — Database
-  
-  HTML, CSS, JavaScript — Frontend UI
-  
-  Chart.js — Visualization
+│
+├── database/
+│   ├── cleaned_trips.csv
+│   ├── nyc_taxi.db
+│   ├── db-setup.py
+│   └── schema.sql
+│
+├── front-end/
+│   ├── index.html
+│   ├── style.css
+│   └── main.js
+│
+├── docs/
+│   ├── readme_images/
+│   └── report.pdf
+│
+└── README.md
 
 # UI/UX Design
 
