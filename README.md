@@ -62,6 +62,48 @@ https://youtu.be/IIVHOGzHnlw?si=CSGwF6dHwMk0BVTx
 
 [PDF documentation.pdf](https://github.com/user-attachments/files/22959284/PDF.documentation.pdf)
 
+# Project Setup 
+
+git clone https://github.com/k-bridget/NYC-TaxiTrip_Dashboard
+
+Backend (Flask API)
+
+cd back-end
+
+Install dependencies:
+
+pip install -r requirements.txt
+pip install numpy    # dependency for anomaly detection
+
+Run the Flask app:
+
+python app.py
+
+The backend will start on:
+http://127.0.0.1:5000
+
+Frontend 
+
+Open a new terminal and navigate to:
+
+cd front-end
+
+Start a simple HTTP server:
+
+Using Python:
+
+python -m http.server 8000
+
+Or if using VS Code Live Server, just click “Go Live”.
+
+Open your browser:
+
+http://127.0.0.1:8000
+
+
+ dashboard loads and fetches data from the backend (port 5000).
+
+
 Common Issues
 
 **Backend server won't start:**
